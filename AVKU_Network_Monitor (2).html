@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVKU Network Monitor</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#0b1220;color:#e8eef7}
+.app{display:flex;min-height:100vh}
+.side{width:235px;background:#101a2b;border-right:1px solid #24324a;padding:24px 16px;flex-shrink:0}
+.logo{font-size:21px;font-weight:800;letter-spacing:.5px;margin-bottom:5px}.sub{font-size:11px;color:#8292aa;margin-bottom:35px}
+.nav{padding:12px 14px;border-radius:9px;color:#aab7ca;margin:5px 0;cursor:pointer;font-size:14px}.nav.active,.nav:hover{background:#1c2a42;color:white}
+.main{flex:1;padding:28px 34px;max-width:1450px;width:100%}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;flex-wrap:wrap;gap:10px}
+h1{font-size:27px;margin:0 0 6px}.muted{color:#8292aa;font-size:13px}.status{display:flex;gap:9px;align-items:center;color:#b8c5d8;font-size:13px}.dot{width:9px;height:9px;border-radius:50%;background:#39d98a;box-shadow:0 0 12px #39d98a}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:#121e31;border:1px solid #24324a;border-radius:12px;padding:18px}.label{font-size:12px;color:#8797ad}.value{font-size:27px;font-weight:750;margin-top:10px}.good{color:#39d98a}.warn{color:#f6c85f}.blue{color:#66a7ff}.red{color:#f16d6d}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-top:18px}.panel{background:#121e31;border:1px solid #24324a;border-radius:12px;padding:20px;margin-bottom:18px}.panel h2{font-size:16px;margin:0 0 18px}
+.devices{width:100%;border-collapse:collapse}.devices th,.devices td{text-align:left;padding:12px 8px;border-bottom:1px solid #223047;font-size:13px;vertical-align:top}.devices th{color:#8292aa;font-weight:500}.online{color:#39d98a}.tag{padding:4px 8px;border-radius:5px;background:#1b2a40;color:#b9c9df;font-size:11px}
+.bar{margin:15px 0}.barline{height:8px;background:#223047;border-radius:8px;overflow:hidden;margin-top:8px}.fill{height:100%;border-radius:8px;background:#4e8cff}
+.alert{padding:12px 13px;border-radius:8px;background:#17253a;margin:8px 0;font-size:12px;color:#bac7d8}.alert b{color:#e8eef7}
+.security{display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{background:#17253a;border-radius:9px;padding:14px}.metric strong{display:block;font-size:21px;margin-top:6px}
+.footer{margin-top:18px;font-size:11px;color:#667891}
+.pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.pill.exitoso{background:#123321;color:#39d98a}
+.pill.baja{background:#123321;color:#39d98a}.pill.media{background:#3a2f13;color:#f6c85f}.pill.alta{background:#3a1414;color:#f16d6d}
+.pill.alto{background:#3a1414;color:#f16d6d}.pill.medio{background:#3a2f13;color:#f6c85f}.pill.bajo{background:#123321;color:#39d98a}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.hero{background:linear-gradient(135deg,#121e31,#0d1729);border:1px solid #24324a;border-radius:14px;padding:34px;margin-bottom:20px}
+.hero h1{font-size:30px}.hero p{color:#b8c5d8;font-size:14px;line-height:1.6;max-width:720px}
+.people{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.person{background:#17253a;border-radius:10px;padding:16px}.person .role{color:#66a7ff;font-size:12px;margin-bottom:4px}.person .name{font-weight:700;font-size:15px;margin-bottom:8px}.person ul{margin:0;padding-left:18px;color:#aab7ca;font-size:12px;line-height:1.7}
+.stepbox{background:#17253a;border-radius:9px;padding:14px;font-size:12px;color:#c3ceda;line-height:1.6}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.conclusion-block{background:#0f1e33;border-left:3px solid #4e8cff;padding:16px 18px;border-radius:6px;margin:14px 0;font-size:13px;color:#c3ceda;line-height:1.7}
+@media(max-width:900px){.grid,.two-col,.people,.kpi-row{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}.app{flex-direction:column}.side{width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="logo">AVKU</div><div class="sub">NETWORK SOLUTIONS</div>
+  <div class="nav active" onclick="show('inicio')">🏢 &nbsp; Inicio</div>
+  <div class="nav" onclick="show('dashboard')">▦ &nbsp; Dashboard</div>
+  <div class="nav" onclick="show('topologia')">🌐 &nbsp; Topología</div>
+  <div class="nav" onclick="show('vlan')">🔐 &nbsp; VLAN</div>
+  <div class="nav" onclick="show('devices')">📡 &nbsp; Dispositivos</div>
+  <div class="nav" onclick="show('pruebas')">🧪 &nbsp; Pruebas</div>
+  <div class="nav" onclick="show('riesgos')">⚠️ &nbsp; Riesgos</div>
+  <div class="nav" onclick="show('presupuesto')">💰 &nbsp; Presupuesto</div>
+  <div class="nav" onclick="show('viabilidad')">📈 &nbsp; Viabilidad</div>
+  <div class="nav" onclick="show('conclusion')">📄 &nbsp; Conclusión</div>
+</aside>
+<main class="main">
+  <div class="top"><div><h1 id="title">Inicio</h1><div class="muted">Distribuidora Logística Sur S.A. · Prototipo AVKU</div></div><div class="status"><span class="dot"></span> Red operativa</div></div>
+  <section id="content"></section>
+  <div class="footer">AVKU Network Solutions · Herramienta conceptual para gestión y monitoreo · Prototipo demostrativo del proyecto "Red Segura"</div>
+</main>
+</div>
+<script>
+const data={
+
+inicio:`<div class="hero">
+<h1>Red Segura</h1>
+<p>Diseño e implementación de una LAN segmentada y segura para <b>Distribuidora Logística Sur S.A.</b>, a cargo de la consultora <b>AVKU Network Solutions</b>. El proyecto reemplaza una red plana e insegura por una arquitectura moderna basada en VLANs, control de acceso y documentación profesional, validada íntegramente en Cisco Packet Tracer.</p>
+</div>
+<div class="cards">
+<div class="card"><div class="label">Cliente</div><div class="value" style="font-size:16px">Distribuidora Logística Sur S.A.</div></div>
+<div class="card"><div class="label">Empleados</div><div class="value">12</div></div>
+<div class="card"><div class="label">Duración del proyecto</div><div class="value blue">43 días</div></div>
+<div class="card"><div class="label">Pruebas exitosas</div><div class="value good">8 / 8</div></div>
+</div>
+<div class="panel" style="margin-top:18px"><h2>Equipo consultor</h2>
+<div class="people">
+<div class="person"><div class="role">GERENTE DE PROYECTO</div><div class="name">Raquel Kucharczik</div><ul><li>Gestión general del proyecto</li><li>Comunicación con el cliente</li><li>Seguimiento del cronograma</li><li>Aprobación de entregables y cierre administrativo</li></ul></div>
+<div class="person"><div class="role">LÍDER TÉCNICA</div><div class="name">Débora Avila</div><ul><li>Diseño de topología y VLANs</li><li>Configuración de router y switches</li><li>Implementación de DHCP y ACL</li><li>Simulación en Packet Tracer y documentación técnica</li></ul></div>
+</div></div>
+<div class="panel"><h2>El problema del cliente</h2><p class="muted" style="line-height:1.7">Distribuidora Logística Sur S.A. opera con una red plana: administración, depósito e invitados comparten el mismo canal. Esto genera caídas de conexión cuando muchos clientes se conectan al Wi-Fi, y representa un riesgo de seguridad grave, ya que cualquier persona conectada al Wi-Fi de invitados podría acceder a información sensible de facturación.</p></div>`,
+
+dashboard:`<div class="cards">
+<div class="card"><div class="label">Estado general</div><div class="value good">Operativa</div></div>
+<div class="card"><div class="label">Dispositivos activos</div><div class="value">4 / 4</div></div>
+<div class="card"><div class="label">VLAN activas</div><div class="value blue">3</div></div>
+<div class="card"><div class="label">Alertas críticas</div><div class="value good">0</div></div>
+</div>
+<div class="grid"><div class="panel"><h2>Estado de dispositivos</h2><table class="devices"><tr><th>Dispositivo</th><th>Función</th><th>Estado</th></tr>
+<tr><td>Cisco ISR 1941</td><td>Enrutamiento</td><td class="online">● Online</td></tr>
+<tr><td>Switch de acceso 1</td><td>Conectividad</td><td class="online">● Online</td></tr>
+<tr><td>Switch de acceso 2</td><td>Conectividad</td><td class="online">● Online</td></tr>
+<tr><td>Access Point</td><td>WiFi Invitados</td><td class="online">● Online</td></tr></table></div>
+<div class="panel"><h2>Uso de red</h2>
+<div class="bar"><div class="muted">Administración · 62%</div><div class="barline"><div class="fill" style="width:62%"></div></div></div>
+<div class="bar"><div class="muted">Depósito · 48%</div><div class="barline"><div class="fill" style="width:48%"></div></div></div>
+<div class="bar"><div class="muted">Invitados · 31%</div><div class="barline"><div class="fill" style="width:31%"></div></div></div></div></div>
+<div class="panel"><h2>Alertas recientes</h2><div class="alert"><b>10:32 · Información</b><br>Verificación de conectividad completada correctamente.</div><div class="alert"><b>10:18 · Seguridad</b><br>Reglas ACL aplicadas y operativas.</div><div class="alert"><b>09:55 · Sistema</b><br>Todos los dispositivos reportan estado online.</div></div>`,
+
+topologia:`<div class="panel"><h2>Topología lógica de la red</h2><p class="muted">Arquitectura Router-on-a-Stick: un único enlace troncal 802.1Q entre el Router Cisco 1941 y los switches Catalyst 2960-L permite el enrutamiento inter-VLAN sin hardware adicional.</p>
+<svg viewBox="0 0 900 380" style="width:100%;height:auto;margin-top:10px">
+<rect x="380" y="20" width="140" height="50" rx="8" fill="#1c2a42" stroke="#4e8cff"/><text x="450" y="50" fill="#e8eef7" font-size="13" text-anchor="middle" font-family="Inter,Arial">Router Cisco 1941</text>
+<line x1="450" y1="70" x2="450" y2="115" stroke="#4e8cff" stroke-width="2"/><text x="465" y="98" fill="#8292aa" font-size="10">Trunk 802.1Q</text>
+<rect x="240" y="115" width="140" height="45" rx="8" fill="#1c2a42" stroke="#39d98a"/><text x="310" y="143" fill="#e8eef7" font-size="12" text-anchor="middle" font-family="Inter,Arial">Switch 1 (2960-L)</text>
+<rect x="520" y="115" width="140" height="45" rx="8" fill="#1c2a42" stroke="#39d98a"/><text x="590" y="143" fill="#e8eef7" font-size="12" text-anchor="middle" font-family="Inter,Arial">Switch 2 (2960-L)</text>
+<line x1="450" y1="70" x2="310" y2="115" stroke="#4e8cff" stroke-width="2"/>
+<line x1="450" y1="70" x2="590" y2="115" stroke="#4e8cff" stroke-width="2"/>
+<rect x="60" y="230" width="150" height="45" rx="8" fill="#17253a" stroke="#66a7ff"/><text x="135" y="258" fill="#e8eef7" font-size="12" text-anchor="middle" font-family="Inter,Arial">VLAN 10 · Administración</text>
+<rect x="240" y="230" width="150" height="45" rx="8" fill="#17253a" stroke="#f6c85f"/><text x="315" y="258" fill="#e8eef7" font-size="12" text-anchor="middle" font-family="Inter,Arial">VLAN 20 · Depósito</text>
+<rect x="480" y="230" width="150" height="45" rx="8" fill="#17253a" stroke="#f16d6d"/><text x="555" y="258" fill="#e8eef7" font-size="12" text-anchor="middle" font-family="Inter,Arial">Access Point WiFi</text>
+<rect x="670" y="230" width="150" height="45" rx="8" fill="#17253a" stroke="#f16d6d"/><text x="745" y="258" fill="#e8eef7" font-size="12" text-anchor="middle" font-family="Inter,Arial">VLAN 30 · Invitados</text>
+<line x1="310" y1="160" x2="135" y2="230" stroke="#66a7ff" stroke-width="2"/>
+<line x1="310" y1="160" x2="315" y2="230" stroke="#f6c85f" stroke-width="2"/>
+<line x1="590" y1="160" x2="555" y2="230" stroke="#f16d6d" stroke-width="2"/>
+<line x1="745" y1="275" x2="745" y2="230" stroke="#f16d6d" stroke-width="2"/>
+<line x1="555" y1="275" x2="745" y2="275" stroke="#f16d6d" stroke-width="2" stroke-dasharray="4,4"/>
+<text x="135" y="345" fill="#8292aa" font-size="11" text-anchor="middle">192.168.10.0/24</text>
+<text x="315" y="345" fill="#8292aa" font-size="11" text-anchor="middle">192.168.20.0/24</text>
+<text x="745" y="345" fill="#8292aa" font-size="11" text-anchor="middle">192.168.30.0/24 · WPA2-PSK</text>
+</svg>
+<p class="muted" style="margin-top:10px">Nota: representación simplificada de la topología validada en Cisco Packet Tracer (archivo .pkt disponible en la documentación técnica).</p>
+</div>
+<div class="panel"><h2>Tabla de direccionamiento IP</h2><table class="devices"><tr><th>VLAN</th><th>Departamento</th><th>Red lógica</th><th>Gateway</th></tr>
+<tr><td><span class="tag">VLAN 10</span></td><td>Administración</td><td>192.168.10.0/24</td><td>192.168.10.1</td></tr>
+<tr><td><span class="tag">VLAN 20</span></td><td>Depósito</td><td>192.168.20.0/24</td><td>192.168.20.1</td></tr>
+<tr><td><span class="tag">VLAN 30</span></td><td>Invitados / APs</td><td>192.168.30.0/24</td><td>192.168.30.1</td></tr></table></div>`,
+
+vlan:`<div class="panel"><h2>Segmentación por VLAN</h2><table class="devices"><tr><th>VLAN</th><th>Sector</th><th>Función</th><th>Estado</th></tr>
+<tr><td><span class="tag">VLAN 10</span></td><td>Administración</td><td>Red interna</td><td class="online">Activa</td></tr>
+<tr><td><span class="tag">VLAN 20</span></td><td>Depósito</td><td>Red interna</td><td class="online">Activa</td></tr>
+<tr><td><span class="tag">VLAN 30</span></td><td>Invitados</td><td>WiFi / acceso restringido (ACL 101)</td><td class="online">Activa</td></tr></table></div>
+<div class="panel"><h2>Estado de seguridad</h2><div class="security">
+<div class="metric"><div class="muted">Segmentación VLAN</div><strong class="good">Correcta</strong></div>
+<div class="metric"><div class="muted">ACL activas</div><strong class="good">Sí</strong></div>
+<div class="metric"><div class="muted">Accesos Invitados → Interna</div><strong>0</strong></div>
+<div class="metric"><div class="muted">Alertas críticas</div><strong class="good">0</strong></div></div></div>
+<div class="panel"><h2>Lógica de la ACL aplicada (FastEthernet 0/0.30)</h2><div class="stepbox">
+access-list 101 deny ip 192.168.30.0 0.0.0.255 192.168.10.0 0.0.0.255<br>
+access-list 101 deny ip 192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255<br>
+access-list 101 permit ip 192.168.30.0 0.0.0.255 any<br>
+interface FastEthernet0/0.30<br>
+ip access-group 101 in</div></div>`,
+
+devices:`<div class="panel"><h2>Dispositivos de la infraestructura</h2><table class="devices"><tr><th>Equipo</th><th>Rol</th><th>Estado</th><th>Última revisión</th></tr>
+<tr><td>Cisco ISR 1941</td><td>Router / Router-on-a-Stick</td><td class="online">● Online</td><td>Ahora</td></tr>
+<tr><td>Switch 1 (Catalyst 2960-L)</td><td>Switch administrable</td><td class="online">● Online</td><td>Ahora</td></tr>
+<tr><td>Switch 2 (Catalyst 2960-L)</td><td>Switch administrable</td><td class="online">● Online</td><td>Ahora</td></tr>
+<tr><td>Access Point Cisco Business 140AC</td><td>WiFi VLAN Invitados · WPA2-PSK</td><td class="online">● Online</td><td>Ahora</td></tr></table></div>
+<div class="panel"><h2>Cableado estructurado</h2><p class="muted">305 m de cableado Cat6 + patch panels + conectores RJ45, certificado ANSI/TIA-568-C.2, garantizando rendimiento Gigabit extremo a extremo en todo el tramo horizontal, con reserva de puestos para crecimiento futuro.</p></div>`,
+
+pruebas:`<div class="cards">
+<div class="card"><div class="label">Pruebas ejecutadas</div><div class="value">8</div></div>
+<div class="card"><div class="label">Exitosas</div><div class="value good">8</div></div>
+<div class="card"><div class="label">Fallidas</div><div class="value good">0</div></div>
+<div class="card"><div class="label">Criterios cumplidos</div><div class="value blue">100%</div></div>
+</div>
+<div class="panel" style="margin-top:18px"><h2>Reporte de pruebas de funcionamiento</h2><table class="devices">
+<tr><th>ID</th><th>Caso de prueba</th><th>Resultado esperado</th><th>Estado</th></tr>
+<tr><td>P01</td><td>Conectividad intra-VLAN</td><td>Comunicación exitosa dentro de cada segmento</td><td><span class="pill exitoso">Exitoso</span></td></tr>
+<tr><td>P02</td><td>Asignación automática DHCP</td><td>100% de dispositivos obtiene IP automáticamente</td><td><span class="pill exitoso">Exitoso</span></td></tr>
+<tr><td>P03</td><td>Aislamiento VLAN 30 → VLAN 10</td><td>0 accesos no autorizados (denegado por ACL 101)</td><td><span class="pill exitoso">Exitoso</span></td></tr>
+<tr><td>P04</td><td>Aislamiento VLAN 30 → VLAN 20</td><td>0 accesos no autorizados (denegado por ACL 101)</td><td><span class="pill exitoso">Exitoso</span></td></tr>
+<tr><td>P05</td><td>Salida a Internet desde VLAN 30</td><td>Tráfico permitido (regla permit any)</td><td><span class="pill exitoso">Exitoso</span></td></tr>
+<tr><td>P06</td><td>Enlace troncal 802.1Q</td><td>Trunk operativo, VLANs 10/20/30 permitidas</td><td><span class="pill exitoso">Exitoso</span></td></tr>
+<tr><td>P07</td><td>Enrutamiento inter-VLAN autorizado</td><td>Comunicación permitida Administración ↔ Depósito</td><td><span class="pill exitoso">Exitoso</span></td></tr>
+<tr><td>P08</td><td>Asociación WiFi WPA2-PSK</td><td>Asociación exitosa y obtención de IP por DHCP</td><td><span class="pill exitoso">Exitoso</span></td></tr>
+</table></div>
+<div class="panel"><h2>Conclusión de las pruebas</h2><p class="muted" style="line-height:1.7">Las ocho pruebas ejecutadas resultaron exitosas, cubriendo la totalidad de los criterios de aceptación definidos en el Entregable 2. La solución simulada en Cisco Packet Tracer queda validada como funcional y lista para su presentación final al cliente.</p></div>`,
+
+riesgos:`<div class="panel"><h2>Matriz de riesgos</h2><p class="muted">Se identifican 7 riesgos técnicos y operativos. Las estrategias de respuesta siguen los cuatro enfoques del PMI: Aceptar, Transferir, Mitigar y Evitar.</p>
+<table class="devices"><tr><th>ID</th><th>Riesgo</th><th>Prob.</th><th>Impacto</th><th>Mitigación</th></tr>
+<tr><td>R01</td><td>Incompatibilidad de versiones en Packet Tracer</td><td><span class="pill media">Media</span></td><td><span class="pill alto">Alto</span></td><td>Probar con versiones actualizadas y mantener una versión estable verificada.</td></tr>
+<tr><td>R02</td><td>Errores en el direccionamiento IP (solapamiento de subredes)</td><td><span class="pill baja">Baja</span></td><td><span class="pill alto">Alto</span></td><td>Validar el subnetting con calculadora IP y doble revisión del equipo.</td></tr>
+<tr><td>R03</td><td>Falla en ACL con bloqueo inadvertido de tráfico autorizado</td><td><span class="pill media">Media</span></td><td><span class="pill alto">Alto</span></td><td>Pruebas incrementales tras cada regla y backup de configuraciones válidas.</td></tr>
+<tr><td>R04</td><td>Disponibilidad limitada del cliente para validaciones</td><td><span class="pill media">Media</span></td><td><span class="pill medio">Medio</span></td><td>Calendario de reuniones acordado y canales asíncronos alternativos.</td></tr>
+<tr><td>R05</td><td>Pérdida del archivo .pkt sin respaldo</td><td><span class="pill baja">Baja</span></td><td><span class="pill alto">Alto</span></td><td>Control de versiones en Drive con historial y backup diario.</td></tr>
+<tr><td>R06</td><td>Subestimación del tiempo de configuración VLAN/Trunk</td><td><span class="pill media">Media</span></td><td><span class="pill medio">Medio</span></td><td>Reserva de contingencia del 20% en actividades de configuración.</td></tr>
+<tr><td>R07</td><td>Dificultad técnica al configurar WiFi WPA2-PSK en PT</td><td><span class="pill baja">Baja</span></td><td><span class="pill medio">Medio</span></td><td>Verificar compatibilidad del AP virtual y documentación de respaldo.</td></tr>
+</table></div>`,
+
+presupuesto:`<div class="cards">
+<div class="card"><div class="label">Valor total del proyecto</div><div class="value blue">$7.039.324</div></div>
+<div class="card"><div class="label">Egreso semanal RRHH</div><div class="value">$677.901</div></div>
+<div class="card"><div class="label">Duración</div><div class="value">8 semanas</div></div>
+<div class="card"><div class="label">Contingencia + margen</div><div class="value good">10% + 18%</div></div>
+</div>
+<div class="panel" style="margin-top:18px"><h2>Calendario de pagos (hitos)</h2><table class="devices">
+<tr><th>Hito</th><th>Semana</th><th>% del total</th><th>Monto</th></tr>
+<tr><td>Anticipo inicial · firma de contrato</td><td>Semana 1</td><td>40%</td><td>$2.815.730</td></tr>
+<tr><td>Avance · configuración completa (VLANs, DHCP, ACL en Packet Tracer)</td><td>Semana 4</td><td>30%</td><td>$2.111.797</td></tr>
+<tr><td>Entrega final y cierre del proyecto</td><td>Semana 8</td><td>30%</td><td>$2.111.797</td></tr>
+</table></div>
+<div class="panel"><h2>Alcance del presupuesto</h2><p class="muted" style="line-height:1.7">El precio corresponde exclusivamente al servicio de diseño, configuración y validación técnica de AVKU Network Solutions (RRHH + ART 3,93% + overhead 15%, más contingencia del 10% y margen comercial del 18%). El equipamiento físico Cisco <b>no</b> integra este presupuesto: su adquisición es una inversión futura y directa del cliente.</p></div>`,
+
+viabilidad:`<div class="cards">
+<div class="card"><div class="label">VAN (tasa 0,75% semanal)</div><div class="value good">$1.588.986</div></div>
+<div class="card"><div class="label">TIRM semanal</div><div class="value good">6,60%</div></div>
+<div class="card"><div class="label">Tasa de referencia</div><div class="value blue">0,75%</div></div>
+<div class="card"><div class="label">Financiamiento externo</div><div class="value good">No requerido</div></div>
+</div>
+<div class="panel" style="margin-top:18px"><h2>Análisis de viabilidad — VAN y TIRM</h2><p class="muted" style="line-height:1.7">El VAN se calcula trayendo al presente cada flujo neto semanal, descontado a la tasa del 0,75% semanal (3% mensual). Un VAN positivo confirma que el proyecto cubre todos sus costos de RRHH y genera rentabilidad real para AVKU Network Solutions.</p>
+<p class="muted" style="line-height:1.7">Se optó por reportar la <b>TIRM</b> (Tasa Interna de Retorno Modificada) en lugar de la TIR clásica, ya que el anticipo del cliente cubre los egresos desde la Semana 1 y el flujo no presenta el patrón negativo→positivo que la TIR requiere. La TIRM de 6,60% semanal es muy superior a la tasa de referencia, confirmando la solidez financiera del proyecto.</p></div>
+<div class="panel"><h2>Costo de la inacción</h2><p class="muted" style="line-height:1.7">Mantener la red plana actual expone a la empresa a cortes de conectividad que detienen simultáneamente a los 12 empleados, y al riesgo de que un usuario del WiFi de invitados acceda a información administrativa sensible. La inversión de $7.039.324 elimina ese riesgo de forma permanente.</p></div>`,
+
+conclusion:`<div class="panel"><h2>Solución propuesta al cliente</h2>
+<div class="conclusion-block">La red plana e insegura de Distribuidora Logística Sur S.A. es reemplazada por una arquitectura de 3 VLANs (Administración, Depósito, Invitados) con enrutamiento Router-on-a-Stick, DHCP automático por segmento y control de acceso mediante ACL, que impide que los invitados accedan a información sensible de la empresa.</div>
+<div class="conclusion-block">La solución fue validada íntegramente en Cisco Packet Tracer, con 8 de 8 pruebas exitosas y el 100% de los criterios de aceptación cumplidos.</div>
+<div class="conclusion-block">El análisis económico confirma la viabilidad del proyecto: VAN positivo de $1.588.986 y TIRM de 6,60% semanal, sin necesidad de financiamiento externo en ningún momento de la ejecución.</div>
+<div class="conclusion-block">Las subredes /24 y el margen de puertos libres en los switches Catalyst 2960-L aseguran escalabilidad para el crecimiento futuro de la empresa, sin nuevas inversiones en hardware básico a corto o mediano plazo.</div>
+</div>
+<div class="panel"><h2>Próximos pasos sugeridos</h2><table class="devices">
+<tr><th>Etapa</th><th>Descripción</th></tr>
+<tr><td>Aprobación del cliente</td><td>Firma del acta de cierre y validación final de la documentación técnica</td></tr>
+<tr><td>Adquisición de hardware</td><td>El cliente decide proveedor/integrador para la implementación física</td></tr>
+<tr><td>Implementación física</td><td>Montaje del router, switches, cableado Cat6 y access points</td></tr>
+<tr><td>Puesta en producción</td><td>Migración de la red plana actual a la arquitectura segmentada validada</td></tr>
+</table></div>`
+};
+
+function show(key){
+ document.getElementById('content').innerHTML=data[key];
+ document.getElementById('title').textContent={inicio:'Inicio',dashboard:'Dashboard de Red',topologia:'Topología',vlan:'Segmentación VLAN',devices:'Dispositivos',pruebas:'Reporte de Pruebas',riesgos:'Matriz de Riesgos',presupuesto:'Presupuesto',viabilidad:'Viabilidad Financiera',conclusion:'Conclusión'}[key];
+ document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));
+ event.currentTarget.classList.add('active');
+}
+document.getElementById('content').innerHTML=data.inicio;
+</script>
+</body>
+</html>
